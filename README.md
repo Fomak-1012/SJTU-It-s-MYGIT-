@@ -1,43 +1,27 @@
-# 关于gitlite的构造
-## 一、类的定义
-### 1.Blob 类
-#### 实例变量
-```
-std::string content;
-std::string id;
-```
-#### 作用:
-封装单个文件的内容快照，作为版本控制的原子单位，通过内容的 SHA-1 哈希确保唯一性。
-### 2.Commit 类
-#### 实例变量
-```
-std::string message//提交信息，描述版本变更
-std::string timestamp//提交时间戳，记录版本创建时间
-std::unordered_map<std::string, std::string> file_blob_map//文件名到 Blob ID 的映射，记录版本的文件组成
-std::vector<std::string> parent_ids//父提交 ID 列表，支持分支合并的多父结构
-```
-#### 作用:
-封装一次版本提交的完整数据，通过父提交链形成版本历史。
-### 3.StagingArea 类
-```
-std::unordered_map<std::string, std::string> add_map//待添加文件与 Blob ID 的映射
-std::unordered_set<std::string> rm_set//待删除文件集合
-std::string staging_path//暂存区存储路径，默认 .gitlet/staging
-```
-#### 作用:
-作为工作目录与版本历史的中间层，临时存储待提交的文件变更，支持持久化以避免程序退出丢失状态。
-### 4.Repository 类
-#### 实例变量
-```
-const std::string repo_path = ".gitlet";
-const std::string objects_path = repo_path + "/objects";
-const std::string refs_path = repo_path + "/refs/heads";
-const std::string head_path = repo_path + "/HEAD";
-const std::string staging_path = repo_path + "/staging";
-```
-#### 作用:
-整合前3个类，完成部分的功能实现（主要集中在离线部分）
+# ***SJTUDream! It's MyGIT! ! ! ! !***
 
+****一言以蔽之：类的实现就是一种封传箱子****
 
-## GitObj类
-实现所有类的整合，提供对外接口
+Fomak你记一下，我做如下部署调整：以Blob、Commit、StagingArea三个类为基础，共同实现一个gitlite的基础部件，再将Repository类的实现分散到RepositoryCore、StatusManager、BranchManager、CommitManager、MergeManager、RemoteManager中，同时利用好FileOperation、Utils和GitliteException简化文件和报错方面的操作，最后把类全部集成的Repository类中，并通过GitObj实现对外的接口。
+
+## 大致骨架（会有部分交叉）
+```text
+src/
+├── utils/                        
+│   ├── Utils.h
+│   ├── GitliteException.h
+│   └── FileOperation.h
+└── basis/                            
+    ├── Blob.h                    # 文件快照的基础实现
+    ├── Commit.h                  # 提交的基础实现
+    ├── StagingArea.h             # 暂存区的基础实现
+    └── Repository.h                       
+        ├── RepositoryCore.h      # 仓库的核心管理
+        ├── StatusManager.h       # 状态查询的实现
+        ├── BranchManager.h       # 分支的基础管理
+        ├── CommitManager.h       # 提交的基础管理
+        ├── MergeManager.h        # 合并操作的重点实现
+        └── RemoteManager.h       # 远程仓库操作的重点实现
+```
+
+### 以下是类的具体实现
