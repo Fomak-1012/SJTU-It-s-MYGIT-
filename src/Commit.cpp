@@ -11,7 +11,7 @@ Commit::Commit(const std::string& message,
                const std::vector<std::string>& parents,
                const std::map<std::string, std::string>& blobs)
     :message(message),timestamp(timestamp),parents(parents),blobs(blobs),merge_info("") {
-    this->id=generateId(message,timestamp,parents,blobs);
+    id=generateId(message,timestamp,parents,blobs);
 }
 
 std::string Commit::getId() const {return id;}
@@ -25,30 +25,26 @@ void Commit::setMergeInfo(const std::string& info) {merge_info=info;}
 
 std::string Commit::serialize() const {
     std::ostringstream oss;
-    // Serialize message
-    oss<<"MESSAGE:"<<message<<"\n";
 
-    // Serialize timestamp
-    oss<<"TIME:"<<timestamp<<"\n";
+    oss<<"Message:"<<message<<"\n";
 
-    // Serialize parents
-    oss<<"PARENTS:";
-    for(size_t i=0;i<parents.size();i++) {
+    oss<<"Time:"<<timestamp<<"\n";
+
+    oss<<"Parents:";
+    for(size_t i=0;i<parents.size();i++){
         if(i>0)oss<<",";
         oss<<parents[i];
     }
     oss<<"\n";
 
-    // Serialize merge info
-    oss<<"MERGE:"<<merge_info<<"\n";
+    oss<<"Merge:"<<merge_info<<"\n";
 
-    // Serialize blobs
-    oss<<"BLOBS:";
-    size_t count=0;
-    for (const auto& pair:blobs) {
-        if(count>0)oss<<",";
+    oss<<"Blobs:";
+    bool flag=0;
+    for(const auto& pair:blobs){
+        if(flag)oss<<",";
         oss<<pair.first<<":"<<pair.second;
-        count++;
+        flag=1;
     }
     oss<<"\n";
 
@@ -64,80 +60,65 @@ Commit Commit::deserialize(const std::string& data) {
     std::map<std::string, std::string> blobs;
     std::string merge_info;
 
-    while (std::getline(iss, line)) {
-        size_t colonPos = line.find(':');
-        if (colonPos == std::string::npos) continue;
-
-        std::string key = line.substr(0, colonPos);
-        std::string value = line.substr(colonPos + 1);
-
-        if (key == "MESSAGE") {
-            message = value;
-        } else if (key == "TIME") {
-            timestamp = std::stoll(value);
-        } else if (key == "PARENTS") {
-            if (!value.empty()) {
-                std::istringstream parentStream(value);
+    while(std::getline(iss, line)){
+        if(line.rfind("Message:",0)==0) 
+            message=line.substr(8);
+        
+        else if(line.rfind("Time:",0)==0)
+            timestamp=std::stoll(line.substr(5));
+        
+        else if(line.rfind("Parents:",0)==0){
+            std::string parents_str=line.substr(8);
+            parents.clear();
+            if(!parents_str.empty()){
+                std::stringstream ss(parents_str);
                 std::string parent;
-                while (std::getline(parentStream, parent, ',')) {
+                while(std::getline(ss, parent,','))
                     parents.push_back(parent);
-                }
             }
-        } else if (key == "MERGE") {
-            merge_info = value;
-        } else if (key == "BLOBS") {
-            if (!value.empty()) {
-                std::istringstream blobStream(value);
-                std::string blobPair;
-                while (std::getline(blobStream, blobPair, ',')) {
-                    size_t colonPos = blobPair.find(':');
-                    if (colonPos != std::string::npos) {
-                        std::string filename = blobPair.substr(0, colonPos);
-                        std::string blobId = blobPair.substr(colonPos + 1);
-                        blobs[filename] = blobId;
+        } 
+
+        else if (line.rfind("Merge:",0) == 0) 
+            merge_info = line.substr(6);
+        
+        else if (line.rfind("Blobs:",0) == 0) {
+            std::string blobs_str = line.substr(6);
+            blobs.clear();
+            if (!blobs_str.empty()) {
+                std::stringstream ss(blobs_str);
+                std::string pair;
+                while (std::getline(ss, pair,',')){
+                    size_t pos=pair.find(':');
+                    if (pos!=std::string::npos){
+                        std::string key=pair.substr(0,pos);
+                        std::string value=pair.substr(pos+1);
+                        blobs[key]=value;
                     }
                 }
             }
         }
     }
-
     Commit commit(message, timestamp, parents, blobs);
     commit.setMergeInfo(merge_info);
     return commit;
 }
 
 Commit Commit::fromFile(const std::string& filename) {
-    std::string content = Utils::readContentsAsString(filename);
-    return deserialize(content);
+    std::string data = Utils::readContentsAsString(filename);
+    return deserialize(data);
 }
 
-std::string Commit::getFormattedTimestamp() const {
-    std::tm* tm_info = std::localtime(&timestamp);
-    std::ostringstream oss;
-    oss << std::put_time(tm_info, "%a %b %d %H:%M:%S %Y %z");
-    return oss.str();
-}
-
-bool Commit::isMergeCommit() const {
-    return parents.size() > 1;
-}
-
-std::string Commit::getShortId() const {
-    return id.substr(0, 7);
-}
-
-std::string Commit::generateId(const std::string& message,
+std::string Commit::generateId(const std::string& message, 
                                const std::time_t& timestamp,
                                const std::vector<std::string>& parents,
                                const std::map<std::string, std::string>& blobs) {
     std::ostringstream oss;
-    oss << message << timestamp;
-    for (const auto& parent : parents) {
-        oss << parent;
-    }
-    for (const auto& pair : blobs) {
-        oss << pair.first << pair.second;
-    }
+    oss<<message<<timestamp;
+    for(const auto& parent : parents) 
+        oss<<parent;
+    
+    for(const auto& blob : blobs) 
+        oss<<blob.first<<blob.second;
     return Utils::sha1(oss.str());
 }
 
