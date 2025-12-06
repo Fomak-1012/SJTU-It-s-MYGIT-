@@ -73,21 +73,21 @@ Commit Commit::deserialize(const std::string& data) {
             if(!parents_str.empty()){
                 std::stringstream ss(parents_str);
                 std::string parent;
-                while(std::getline(ss, parent,','))
+                while(std::getline(ss,parent,','))
                     parents.push_back(parent);
             }
         } 
 
         else if (line.rfind("Merge:",0) == 0) 
-            merge_info = line.substr(6);
+            merge_info=line.substr(6);
         
         else if (line.rfind("Blobs:",0) == 0) {
-            std::string blobs_str = line.substr(6);
+            std::string blobs_str=line.substr(6);
             blobs.clear();
             if (!blobs_str.empty()) {
                 std::stringstream ss(blobs_str);
                 std::string pair;
-                while (std::getline(ss, pair,',')){
+                while (std::getline(ss,pair,',')){
                     size_t pos=pair.find(':');
                     if (pos!=std::string::npos){
                         std::string key=pair.substr(0,pos);
