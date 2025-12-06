@@ -1,32 +1,35 @@
 #ifndef BLOB_H
 #define BLOB_H
 
-#include <string>
+#include<cstring>
 
-class Blob {
+class Blob{
 private:
-    std::string id;       // Blob 的 SHA1 唯一标识
-    std::string content;  // Blob 存储的文件内容
-
+    std::string id;         // SHA1码
+    std::string content;    // 文件内容
 public:
-    // 1. 通过文件内容创建 Blob（自动生成 SHA1 ID）
+    //通过文件内容构造blob对象
     explicit Blob(const std::string& content);
-    // 2. 通过已有 ID 和内容创建 Blob（用于加载已存在的 Blob）
-    Blob(const std::string& id, const std::string& content);
 
-    // 获取 Blob ID
+    //通过文件内容和id构造blob对象
+    Blob(const std::string& id,const std::string& content);
+
+    //获取blob的id
     std::string getId() const;
-    // 获取 Blob 内容
+
+    //获取blob的内容
     std::string getContent() const;
 
-    // 将 Blob 写入到指定 objects 目录
-    void write(const std::string& objectsDir) const;
+    //将blob写入objects目录
+    void write(const std::string& path) const;
 
-    // 静态方法：从 objects 目录加载 Blob
-    static Blob load(const std::string& objectsDir, const std::string& blobId);
-    // 静态方法：创建 Blob 并写入 objects 目录（返回创建的 Blob）
-    static Blob create(const std::string& objectsDir, const std::string& content);
-    // 静态方法：生成内容的 SHA1 哈希（封装 Utils::sha1）
+    //从objects目录读取blob
+    static Blob load(const std::string& path,const std::string& id);
+
+    //创建blob对象并写入objects目录
+    static Blob create(const std::string& path,const std::string& content);
+
+    //获取blob的sha1码
     static std::string generateId(const std::string& content);
 };
 
