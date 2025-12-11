@@ -19,7 +19,26 @@ private:
     void loadRemovedFiles();
    
 public:
-    StagingArea(const std::string& );
+    StagingArea(const std::string&,const std::string&);
+
+    const std::map<std::string,std::string>& getStagingMap() const;
+    const std::set<std::string>& getRemovedFiles() const;
+
+    void addStagedFile(const std::string&,const std::string&);
+    void removeStagedFile(const std::string&);
+    void addRemovedFile(const std::string&);
+    void removeRemovedFile(const std::string&);
+
+    //保存暂存区和删除列表
+    void save() const;
+
+    void clear();
+
+    //重新加载暂存区和删除列表
+    void reload();
+
+    bool isStaged(const std::string&) const;
+    bool isRemoved(const std::string&) const;
 };
 
 #endif // STAGINGAREA_H
