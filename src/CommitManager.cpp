@@ -68,7 +68,7 @@ void CommitManager::saveCommit(const Commit& commit){
     Utils::writeContents(commit_path,commit.serialize());
 }
 
-Commit CommitManager::getCommit(const std::string& id) const {
+Commit CommitManager::getCommit(const std::string& id){
     std::string full_id=getFullCommitId(id);
     std::string commit_path=Utils::join(".gitlite/objects",full_id);
     if(full_id.empty()){
@@ -182,7 +182,7 @@ bool CommitManager::fileExistsInCommit(const std::string& filename,const std::st
     return !getFileBlobId(filename,commitId).empty();
 }
 
-std::string CommitManager::getCurrentCommitId() const{
+std::string CommitManager::getCurrentCommitId(){
     return core->getBranchHead(core->getCurrentBranch());
 }
 
@@ -195,4 +195,30 @@ void CommitManager::copyFileFromCommit(const std::string& filename,const std::st
 
     Blob blob=Blob::load(".gitlite/objects",blob_id);
     Utils::writeContents(filename,blob.getContent());
+}
+
+std::map<std::string,std::string> CommitManager::getTrackedFiles(const std::string& commitId){
+    if(commitId.empty()){
+        return {};
+    }
+
+    Commit commit=getCommit(commitId);
+    return commit.getBlobs();
+}
+
+Commit CommitManager::getHeadCommit(){
+    std::string current_commit_id=getCurrentCommitId();
+    return getCommit(current_commit_id);
+}
+
+std::vector<std::string> CommitManager::getFiles(const std::string& commitId){
+    std::vector<std::string> files;
+    Commit commit=getCommit(commitId);
+    auto blobs=commit.getBlobs();
+
+    for(const auto& blob:blobs){
+        files.push_back(blob.first);
+    }
+
+    return files;
 }
