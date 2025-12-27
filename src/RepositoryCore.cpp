@@ -2,6 +2,7 @@
 #include"../include/Utils.h"
 #include"../include/GitliteException.h"
 #include"../include/Commit.h"
+#include <cctype>
 
 const std::string RepositoryCore::gitlite_dir=".gitlite";
 const std::string RepositoryCore::objects_dir=".gitlite/objects";
@@ -10,17 +11,6 @@ const std::string RepositoryCore::staging_area_file=".gitlite/staging";
 const std::string RepositoryCore::removed_file=".gitlite/removed";
 const std::string RepositoryCore::head_file=".gitlite/HEAD";
 const std::string RepositoryCore::remotes_file=".gitlite/remotes";
-
-static void removeWhiteSpace(std::string& str){
-    while (!str.empty()
-            &&(str.back()=='\r'
-            ||str.back()=='\n'
-            ||isspace((unsigned char)str.back()))){str.pop_back();}
-    while (!str.empty()
-            &&(str.front()=='\r'
-            ||str.front()=='\n'
-            ||isspace((unsigned char)str.front()))){str.erase(str.begin());}
-}
 
 RepositoryCore::RepositoryCore() : stagingArea(staging_area_file,removed_file){}
 
@@ -58,39 +48,37 @@ std::string RepositoryCore::getCurrentBranch(){
     return Utils::readContentsAsString(head_file);
 }
 
+// 设置当前分支
 void RepositoryCore::setCurrentBranch(const std::string& branch){
     if(branch.empty()){Utils::exitWithMessage("branch name is empty");}
-    if(!Utils::exists(Utils::join(branches_dir,branch))){Utils::exitWithMessage("branch does not exist");}
-    Utils::writeContents(head_file,branch);
+    Utils::writeContents(head_file,branch);  // 写入HEAD文件
 }
 
+// 获取分支指向的commit ID
 std::string RepositoryCore::getBranchHead(const std::string& branch){
     if(branch.empty()){Utils::exitWithMessage("branch name is empty");}
-    if(!Utils::exists(Utils::join(branches_dir,branch))){Utils::exitWithMessage("branch does not exist");}
-    std::string id=Utils::readContentsAsString(Utils::join(branches_dir,branch));
-    removeWhiteSpace(id);
+    if(!Utils::exists(Utils::join(branches_dir,branch))){return "";} 
+    
+    std::string id=Utils::readContentsAsString(Utils::join(branches_dir,branch));  // 读取分支文件
     return id;
 }
 
+// 设置分支指向的commit
 void RepositoryCore::setBranchHead(const std::string& branch,const std::string& commit_id){
     if(branch.empty()){Utils::exitWithMessage("branch name is empty");}
     if(commit_id.empty()){Utils::exitWithMessage("commit id is empty");}
     if(!Utils::exists(Utils::join(objects_dir,commit_id))){Utils::exitWithMessage("commit does not exist");}
 
-    std::string branch_file=Utils::join(branches_dir,branch);
+    std::string branch_file=Utils::join(branches_dir,branch);  // 分支文件路径
     std::string id=commit_id;
 
-    removeWhiteSpace(id);
-
-    Utils::writeContents(Utils::join(branches_dir,branch),commit_id);
+    Utils::writeContents(branch_file,id);  // 写入分支文件
 }
 
 void RepositoryCore::clearStagingArea(){
-    stagingArea.clear();
+    stagingArea.clear(); 
 }
-
 
 StagingArea& RepositoryCore::getStagingArea(){
     return stagingArea;
 }
-

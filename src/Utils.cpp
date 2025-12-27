@@ -3,6 +3,10 @@
 #include <iostream>
 #include <sys/stat.h>
 #include <cstring>
+#include <dirent.h>
+#include <algorithm>
+#include <sstream>
+#include <iomanip>
 
 /** Assorted utilities.
  *
@@ -10,7 +14,8 @@
  * to save you some time.
  */
 
-// SHA1 implementation
+
+
 namespace SHA1 {
     void SHA::reset() {
         A = 0x67452301;

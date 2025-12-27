@@ -95,7 +95,8 @@ void Repository::push(const std::string& remoteName,const std::string& branchNam
 }
 
 void Repository::pull(const std::string& remoteName,const std::string& branchName){
-    remoteManager->pull(remoteName,branchName);
+    remoteManager->fetch(remoteName,branchName);
+    mergeManager->merge(remoteName+"/"+branchName);
 }
 
 void Repository::addRemote(const std::string& remoteName,const std::string& remotePath){
@@ -108,6 +109,42 @@ void Repository::rmRemote(const std::string& remoteName){
 
 void Repository::fetch(const std::string& remoteName,const std::string& branchName){
     remoteManager->fetch(remoteName,branchName);
+}
+
+std::string Repository::getCurrentBranch(){
+    return core->getCurrentBranch();
+}
+
+std::string Repository::getCurrentCommitId(){
+    return commitManager->getCurrentCommitId();
+}
+
+void Repository::setCurrentBranch(const std::string& branchName){
+    core->setCurrentBranch(branchName);
+}
+
+void Repository::clearStagingArea(){
+    core->clearStagingArea();
+}
+
+std::set<std::string> Repository::getConflictFiles(){
+    return fileOpManager->getConflictFiles();
+}
+
+void Repository::saveConflictFiles(const std::set<std::string>& files){
+    fileOpManager->saveConflictFiles(files);
+}
+
+void Repository::clearConflictFiles(){
+    fileOpManager->clearConflictFiles();
+}
+
+Commit Repository::getHeadCommit(){
+    return commitManager->getHeadCommit();
+}
+
+std::vector<std::string> Repository::getFiles(const std::string& commitId){
+    return commitManager->getFiles(commitId);
 }
 
 

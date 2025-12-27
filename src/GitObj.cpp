@@ -1,19 +1,19 @@
 #include"../include/GitObj.h"
 
 void GitObj::init(){
-    repo.init();
+    repo.init();  
 }
 
 void GitObj::add(const std::string& filename){
-    repo.add(filename);
+    repo.add(filename);  
 }
 
 void GitObj::commit(const std::string& message){
-    repo.commit(message);
+    repo.commit(message);  
 }
 
 void GitObj::rm(const std::string& filename){
-    repo.rm(filename);
+    repo.rm(filename); 
 }
 
 void GitObj::log(){
@@ -21,7 +21,7 @@ void GitObj::log(){
 }
 
 void GitObj::globalLog(){
-    repo.globalLog();
+    repo.globalLog(); 
 }
 
 void GitObj::find(const std::string& commitMessage){
