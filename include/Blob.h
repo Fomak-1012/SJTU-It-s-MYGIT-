@@ -1,7 +1,7 @@
 #ifndef BLOB_H
 #define BLOB_H
 
-#include<cstring>
+#include<string>
 
 class Blob{
 private:

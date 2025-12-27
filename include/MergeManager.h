@@ -1,7 +1,7 @@
 #ifndef MERGE_MANAGER_H
 #define MERGE_MANAGER_H
 
-#include<cstring>
+#include<string>
 #include<set>
 
 class RepositoryCore;

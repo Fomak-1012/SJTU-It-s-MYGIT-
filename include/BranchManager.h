@@ -1,7 +1,7 @@
 #ifndef BRANCH_MANAGER_H
 #define BRANCH_MANAGER_H
 
-#include<cstring>
+#include<string>
 #include<set>
 
 class RepositoryCore;

@@ -48,21 +48,20 @@ public:
     void branch(const std::string& branchName);
     void rmBranch(const std::string& branchName);
     void reset(const std::string& commitId);
-    void branch(const std::string& branchName);
     void merge(const std::string& branchName);
     void addRemote(const std::string& remoteName,const std::string& remotePath);
     void rmRemote(const std::string& remoteName);
     void push(const std::string& remoteName,const std::string& remoteBranchName);
     void fetch(const std::string& remoteName,const std::string& remoteBranchName);
     void pull(const std::string& remoteName,const std::string& remoteBranchName);
-   
+
     std::string getCurrentBranch();
     std::string getCurrentCommitId();
-    std::string setCurrentBranch(const std::string& branchName);
+    void setCurrentBranch(const std::string& branchName);
     void clearStagingArea();
-    std::set<std::string> getConfictFiles();
-    void saveConfictFiles(const std::set<std::string>& files);
-    void clearConfictFiles();
+    std::set<std::string> getConflictFiles();
+    void saveConflictFiles(const std::set<std::string>& files);
+    void clearConflictFiles();
 
     Commit getHeadCommit();
     std::vector<std::string> getFiles(const std::string& commitId);

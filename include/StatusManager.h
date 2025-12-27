@@ -1,7 +1,7 @@
 #ifndef STATUS_MANAGER_H
 #define STATUS_MANAGER_H
 
-#include<cstring>
+#include<string>
 #include<set>
 #include<map>
 

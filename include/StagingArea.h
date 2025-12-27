@@ -1,7 +1,7 @@
 #ifndef STAGINGAREA_H
 #define STAGINGAREA_H
 
-#include<cstring>
+#include<string>
 #include<map>   
 #include<set>
 
