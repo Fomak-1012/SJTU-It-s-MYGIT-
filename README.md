@@ -308,18 +308,6 @@ void cleanupManagers();                               // 清理管理器资源
 ### GitObj 类 
 
 **功能**：GitLite的对外接口类，提供统一的命令行接口，作为整个系统的入口点
-
-**主要方法**：
-```cpp
-GitObj();                                            // 构造函数，初始化Repository
-~GitObj();                                           // 析构函数
-void executeCommand(const std::vector<std::string>& args); // 执行命令行参数
-void run(int argc, char* argv[]);                   // 运行GitLite程序
-static void printUsage();                            // 打印使用说明
-static void printVersion();                          // 打印版本信息
-private:
-Repository* repository;                              // 仓库实例指针
-void parseAndExecute(const std::string& command, const std::vector<std::string>& args); // 解析并执行命令
 ```
 
 ## 命令
